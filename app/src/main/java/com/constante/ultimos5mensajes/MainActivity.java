@@ -9,8 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
-    Intent intent = new Intent(this,Ultimos5Mensajes.class);
-    Thread mensajes;
+    Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,13 +19,7 @@ public class MainActivity extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_SMS}, 1000);
         }
-         /*mensajes = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                startService(intent);
-            }
-        });
-        mensajes.start();*/
+        intent = new Intent(this,Ultimos5Mensajes.class);
         startService(intent);
     }
 

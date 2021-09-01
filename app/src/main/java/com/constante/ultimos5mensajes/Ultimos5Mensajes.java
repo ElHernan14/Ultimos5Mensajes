@@ -19,26 +19,35 @@ public class Ultimos5Mensajes extends Service {
     @SuppressLint("Range")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Uri uriSms = Uri.parse("content://sms/inbox");
-        ContentResolver cr = getContentResolver();
-        Cursor c = cr.query(uriSms, null,null,null,null);
-        String mensaje = null;
-        String numero = null;
-        while(true){
-            try {
-                Thread.sleep(9000);
-                if (c != null && c.getCount()>0){
-                    StringBuilder sb = new StringBuilder();
-                    while(c.getCount()<6){
-                        mensaje = c.getString(c.getColumnIndex(Telephony.Sms.BODY));
-                        numero = c.getString(c.getColumnIndex(Telephony.Sms._ID));
-                        Log.d("SMS", "Numero: "+numero+", Mensaje: "+mensaje);
+        Thread tarea = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Uri uriSms = Uri.parse("content://sms/inbox");
+                ContentResolver cr = getContentResolver();
+                while(true){
+                    Cursor c = cr.query(uriSms, null,null,null,null);
+                    String mensaje = null;
+                    String numero = null;
+                    if (c != null && c.getCount()>0){
+                        int i = 1;
+                        while(c.moveToNext() && i<6){
+                            mensaje = c.getString(c.getColumnIndex(Telephony.Sms.BODY));
+                            numero = c.getString(c.getColumnIndex(Telephony.Sms._ID));
+                            Log.d("SMS", "Numero: "+numero+", Mensaje: "+mensaje);
+                            i++;
+                        }
+                        try {
+                            Thread.sleep(9000);
+
+                        } catch (InterruptedException e) {
+                            break;
+                        }
                     }
+                    c.close();
                 }
-            } catch (InterruptedException e) {
-                break;
             }
-        }
+        });
+        tarea.start();
         return START_STICKY;
     }
 
